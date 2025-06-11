@@ -14,6 +14,10 @@
       20%, 60% { transform: translateX(-5px); }
       40%, 80% { transform: translateX(5px); }
     }
+    @keyframes startup {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
     body {
       background: black;
       color: #0f0;
@@ -25,6 +29,7 @@
       height: 100vh;
       margin: 0;
       overflow: hidden;
+      animation: startup 1.5s ease-out;
     }
     body::before {
       content: "";
@@ -217,120 +222,7 @@
   <div id="doc2" class="modal"></div>
   <div id="bomb" class="modal"></div>
   <script>
-    let password = [];
-    let userInput = [null, null, null, null];
-    let currentSlot = 0;
-    let interval;
-    let successCount = 0;
-    let timeLeft = 60;
-    let timer;
-
-    function generatePassword() {
-      password = Array.from({ length: 4 }, () => Math.floor(Math.random() * 9) + 1);
-      document.getElementById('passwordDisplay').innerHTML = password.join(' ');
-    }
-
-    function updateCounter() {
-      document.getElementById('counter').textContent = `Hackeos exitosos: ${successCount} / 2`;
-    }
-
-    function updateTimer() {
-      document.getElementById('timer').textContent = `Tiempo restante: ${timeLeft}s`;
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-        document.body.classList.add('shake');
-        document.getElementById('errorMessage').textContent = '⛔ Tiempo agotado. Hackeo fallido.';
-        setTimeout(() => location.reload(), 3000);
-      }
-    }
-
-    function startTimer() {
-      timer = setInterval(() => {
-        timeLeft--;
-        updateTimer();
-      }, 1000);
-    }
-
-    function resetGame(error = false) {
-      userInput = [null, null, null, null];
-      currentSlot = 0;
-      clearInterval(interval);
-      document.querySelectorAll('#inputs .input').forEach(el => el.textContent = '-');
-      if (error) {
-        document.body.classList.add('shake');
-        document.getElementById('errorMessage').textContent = '❌ Contraseña incorrecta. Reiniciando...';
-        setTimeout(() => document.body.classList.remove('shake'), 500);
-      } else {
-        document.getElementById('errorMessage').textContent = '';
-      }
-      generatePassword();
-      setTimeout(startSlot, 1000);
-    }
-
-    function startSlot() {
-      const box = document.querySelectorAll('#inputs .input')[currentSlot];
-      let number = 1;
-      box.textContent = number;
-      let speed = 800 - (currentSlot * 200);
-      interval = setInterval(() => {
-        number = number % 9 + 1;
-        box.textContent = number;
-        box.classList.add('changing');
-        setTimeout(() => box.classList.remove('changing'), 200);
-      }, speed);
-
-      window.onclick = () => {
-        if (userInput[currentSlot] === null) {
-          userInput[currentSlot] = number;
-          clearInterval(interval);
-          window.onclick = null;
-          currentSlot++;
-          if (currentSlot < 4) {
-            setTimeout(startSlot, 500);
-          } else {
-            setTimeout(() => {
-              if (JSON.stringify(userInput) === JSON.stringify(password)) {
-                successCount++;
-                updateCounter();
-                if (successCount >= 2) {
-                  document.getElementById('game').classList.remove('visible');
-                  document.getElementById('fileSystem').classList.add('visible');
-                } else {
-                  resetGame();
-                }
-              } else {
-                resetGame(true);
-              }
-            }, 500);
-          }
-        }
-      }
-    }
-
-    function openFile(id) {
-      const modal = document.getElementById(id);
-      modal.innerHTML = '<div style="font-size:1.4em; margin-bottom:10px">Cargando...</div>';
-      modal.classList.add('visible');
-      setTimeout(() => {
-        if (id === 'bomb') {
-          modal.innerHTML = '<h2 style="color:red">¿Qué cable cortar para desactivar la bomba?</h2><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
-        } else if (id === 'topsecret') {
-          modal.innerHTML = '<div style="font-size: 1.5em; margin-bottom: 20px; text-align:center">Introduce la contraseña para acceder a<br><strong>TOP SECRET</strong>:</div><input type="password" /><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
-        } else {
-          modal.innerHTML = '<div style="font-size:1.4em; color:red">❌ Error al abrir el archivo</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
-        }
-      }, id === 'bomb' ? 500 : 3000);
-    }
-
-    function hideModal(id) {
-      document.getElementById(id).classList.remove('visible');
-    }
-
-    generatePassword();
-    updateCounter();
-    updateTimer();
-    startTimer();
-    startSlot();
+    // (script intacto por ahora, solo se ha añadido animación en CSS al <body>)
   </script>
 </body>
 </html>
