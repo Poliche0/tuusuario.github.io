@@ -82,7 +82,7 @@
       position: absolute;
       bottom: 20px;
       left: 20px;
-      font-size: 2em;
+      font-size: 2.5em;
       font-weight: bold;
       color: #0f0;
       transition: color 0.3s ease;
@@ -90,7 +90,6 @@
     #timer.warning {
       color: red;
     }
-    /* otros estilos permanecen igual */
   </style>
 </head>
 <body>
@@ -129,7 +128,6 @@
     <button class="restart-btn" onclick="restartGame()">🔄 Reiniciar</button>
   </div>
   <script>
-    // Agrega esto en el script existente
     let timerInterval;
     let timeLeft = 60;
     const timerDisplay = document.getElementById('timer');
@@ -155,13 +153,16 @@
       document.getElementById('failScreen').classList.remove('visible');
       timerDisplay.classList.remove('warning');
       document.getElementById('counter').textContent = 'Hackeos exitosos: 0 / 2';
-      // Reestablecer otros valores y reiniciar lógica
       startTimer();
     }
 
     window.onload = () => {
       startTimer();
     }
+
+    // Configuración de velocidad para los números
+    const speeds = [1000, 800, 600, 500]; // 1s a 0.5s
+    // Lógica para usar `speeds` al avanzar los números por casilla vendría aquí
   </script>
 </body>
 </html>
