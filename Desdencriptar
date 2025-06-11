@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hackeo - Escape Room</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #0f0;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .screen, .file-system {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    .visible {
+      display: flex;
+    }
+    .digits, .inputs {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .digit, .input {
+      background-color: #111;
+      padding: 10px 15px;
+      font-size: 24px;
+      border: 1px solid #0f0;
+      width: 50px;
+      text-align: center;
+    }
+    .files {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+    .file {
+      padding: 10px;
+      background: #111;
+      margin: 5px;
+      border: 1px solid #0f0;
+      cursor: pointer;
+      width: 200px;
+      text-align: center;
+    }
+    .modal {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      border: 2px solid #0f0;
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+    }
+    .modal.visible {
+      display: flex;
+    }
+    .close-btn {
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="game" class="screen visible">
+    <div>Contraseña:</div>
+    <div class="digits" id="passwordDisplay"></div>
+    <div class="inputs" id="inputs"></div>
+    <div id="errorMessage"></div>
+  </div>
+
+  <div id="fileSystem" class="file-system">
+    <h2>ACCESO CONCEDIDO</h2>
+    <div class="files">
+      <div class="file" onclick="showModal('topsecret')">🔐 TOP SECRET</div>
+      <div class="file" onclick="showModal('error')">📁 archivo1.txt</div>
+      <div class="file" onclick="showModal('error')">📁 archivo2.txt</div>
+      <div class="file" onclick="showModal('bomb')">💣 Desactivación Bombas</div>
+    </div>
+  </div>
+
+  <div id="topsecret" class="modal">
+    <div>Introduce contraseña para acceder:</div>
+    <input type="password" />
+    <div class="close-btn" onclick="hideModal('topsecret')">❌ Cerrar</div>
+  </div>
+  <div id="error" class="modal">
+    <div>Error al abrir el archivo.</div>
+    <div class="close-btn" onclick="hideModal('error')">❌ Cerrar</div>
+  </div>
+  <div id="bomb" class="modal">
+    <h2>¿Qué cable cortar para desactivar la bomba?</h2>
+    <div class="close-btn" onclick="hideModal('bomb')">❌ Cerrar</div>
+  </div>
+
+  <script>
+    let password = [];
+    let userInput = [null, null, null, null];
+    let currentSlot = 0;
+    let interval;
+
+    function generatePassword() {
+      password = Array.from({length: 4}, () => Math.floor(Math.random() * 9) + 1);
+      const display = document.getElementById('passwordDisplay');
+      display.innerHTML = '';
+      password.forEach(num => {
+        const div = document.createElement('div');
+        div.className = 'digit';
+        div.textContent = num;
+        display.appendChild(div);
+      });
+    }
+
+    function resetGame(error = false) {
+      userInput = [null, null, null, null];
+      currentSlot = 0;
+      clearInterval(interval);
+      document.getElementById('inputs').innerHTML = '';
+      document.getElementById('errorMessage').textContent = error ? '❌ Contraseña incorrecta. Reiniciando...' : '';
+      generatePassword();
+      setTimeout(startSlot, 1000);
+    }
+
+    function startSlot() {
+      const container = document.getElementById('inputs');
+      const box = document.createElement('div');
+      box.className = 'input';
+      let number = 1;
+      box.textContent = number;
+      container.appendChild(box);
+
+      let speed = 1000 - (currentSlot * 200);
+      interval = setInterval(() => {
+        number = number % 9 + 1;
+        box.textContent = number;
+      }, speed);
+
+      window.onclick = () => {
+        if (userInput[currentSlot] === null) {
+          userInput[currentSlot] = number;
+          clearInterval(interval);
+          window.onclick = null;
+          currentSlot++;
+          if (currentSlot < 4) {
+            setTimeout(startSlot, 500);
+          } else {
+            setTimeout(() => {
+              if (JSON.stringify(userInput) === JSON.stringify(password)) {
+                document.getElementById('game').classList.remove('visible');
+                document.getElementById('fileSystem').classList.add('visible');
+              } else {
+                resetGame(true);
+              }
+            }, 500);
+          }
+        }
+      }
+    }
+
+    function showModal(id) {
+      document.getElementById(id).classList.add('visible');
+    }
+
+    function hideModal(id) {
+      document.getElementById(id).classList.remove('visible');
+    }
+
+    generatePassword();
+    startSlot();
+  </script>
+</body>
+</html>
