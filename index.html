@@ -1,247 +1,181 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Interfaz de Seguridad Nacional</title>
-  <style>
-    @keyframes matrixRain {
-      0% { background-position: 0 0; }
-      100% { background-position: 0 1000px; }
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-5px); }
-      40%, 80% { transform: translateX(5px); }
-    }
-    @keyframes startup {
-      0% { opacity: 0; transform: scale(0.9); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-    @keyframes popup {
-      from { transform: scale(0.8) translate(-50%, -50%); opacity: 0; }
-      to { transform: scale(1) translate(-50%, -50%); opacity: 1; }
-    }
-    body {
-      background: black;
-      color: #0f0;
-      font-family: 'Courier New', Courier, monospace;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-      animation: startup 1.5s ease-out;
-      position: relative;
-    }
-    body.shake {
-      animation: shake 0.5s;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: url('https://media.giphy.com/media/l0HlQ7LRal7hZ4tGo/giphy.gif') repeat;
-      background-size: cover;
-      opacity: 0.1;
-      z-index: -1;
-      animation: matrixRain 10s linear infinite;
-    }
-    #instruction {
-      font-size: 1.8em;
-      margin-bottom: 20px;
-    }
-    #passwordDisplay {
-      font-size: 3em;
-      color: #0f0;
-      letter-spacing: 1.5em;
-      margin-bottom: 30px;
-      font-weight: bold;
-      user-select: none;
-      background: rgba(0,100,0,0.3);
-      padding: 10px 40px;
-      border-radius: 10px;
-      font-family: 'Courier New', Courier, monospace;
-    }
-    #inputs {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-    .input {
-      width: 80px;
-      height: 80px;
-      background: black;
-      border: 3px solid #0f0;
-      color: #0f0;
-      font-size: 3em;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Courier New', Courier, monospace;
-      user-select: none;
-      position: relative;
-      overflow: hidden;
-    }
-    .input.animate {
-      animation: numberChange 0.3s ease forwards;
-    }
-    @keyframes numberChange {
-      0% { transform: translateY(-10px); opacity: 0.7; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
-    #errorMessage {
-      height: 30px;
-      color: red;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    #counter {
-      font-size: 1.5em;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      font-weight: bold;
-      user-select: none;
-    }
-    #timer {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #0f0;
-      transition: color 0.3s ease;
-      user-select: none;
-    }
-    #timer.warning {
-      color: red;
-    }
-    /* Full error overlay */
-    .full-error {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: black;
-      color: red;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-size: 2.5em;
-      z-index: 1000;
-      user-select: none;
-    }
-    .full-error.visible {
-      display: flex;
-    }
-    .restart-btn {
-      margin-top: 30px;
-      padding: 15px 40px;
-      font-size: 1.5em;
-      border: 3px solid red;
-      background: transparent;
-      color: red;
-      cursor: pointer;
-      user-select: none;
-      border-radius: 10px;
-      transition: background-color 0.3s ease;
-    }
-    .restart-btn:hover {
-      background-color: red;
-      color: black;
-    }
-    /* File system */
-    #fileSystem {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 40px;
-      width: 600px;
-      user-select: none;
-    }
-    #fileSystem h2 {
-      color: #ffb700;
-      font-size: 2em;
-      margin-bottom: 20px;
-      font-weight: bold;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      user-select: none;
-    }
-    .files {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-    }
-    .file {
-      background: #ffb700;
-      color: black;
-      padding: 15px 25px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 1.5em;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      cursor: pointer;
-      box-shadow: 0 3px 6px rgb(0 0 0 / 0.2);
-      user-select: none;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: background-color 0.25s ease;
-    }
-    .file:hover {
-      background: #e0a900;
-    }
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      background: black;
-      color: #0f0;
-      border: 2px solid #0f0;
-      border-radius: 10px;
-      padding: 30px 40px;
-      transform: translate(-50%, -50%);
-      z-index: 1100;
-      font-family: 'Courier New', Courier, monospace;
-      max-width: 90vw;
-      max-height: 80vh;
-      overflow-y: auto;
-      user-select: none;
-    }
-    .modal input[type="password"] {
-      font-size: 1.5em;
-      padding: 8px 12px;
-      width: 100%;
-      border-radius: 5px;
-      border: 1px solid #0f0;
-      background: black;
-      color: #0f0;
-      margin-bottom: 20px;
-      font-family: monospace;
-    }
-    .close-btn {
-      cursor: pointer;
-      color: red;
-      font-size: 2em;
-      font-weight: bold;
-      position: absolute;
-      top: 8px;
-      right: 12px;
-      user-select: none;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Interfaz de Seguridad Nacional</title>
+<style>
+  body {
+    background: black;
+    color: #0f0;
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    user-select: none;
+  }
+  #instruction {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+  }
+  #passwordDisplay {
+    font-size: 3em;
+    letter-spacing: 1.5em;
+    margin-bottom: 30px;
+    font-weight: bold;
+  }
+  #inputs {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .input {
+    width: 80px;
+    height: 80px;
+    background: black;
+    border: 3px solid #0f0;
+    color: #0f0;
+    font-size: 3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #errorMessage {
+    height: 30px;
+    color: red;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  #counter {
+    font-size: 1.5em;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-weight: bold;
+  }
+  #timer {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #0f0;
+    transition: color 0.3s ease;
+  }
+  #timer.warning {
+    color: red;
+  }
+  .full-error {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: black;
+    color: red;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5em;
+    z-index: 1000;
+  }
+  .full-error.visible {
+    display: flex;
+  }
+  .restart-btn {
+    margin-top: 30px;
+    padding: 15px 40px;
+    font-size: 1.5em;
+    border: 3px solid red;
+    background: transparent;
+    color: red;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+  .restart-btn:hover {
+    background-color: red;
+    color: black;
+  }
+  #fileSystem {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+    width: 600px;
+  }
+  #fileSystem h2 {
+    color: #ffb700;
+    font-size: 2em;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  .files {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+  .file {
+    background: #ffb700;
+    color: black;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.5em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.25s ease;
+  }
+  .file:hover {
+    background: #e0a900;
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background: black;
+    color: #0f0;
+    border: 2px solid #0f0;
+    border-radius: 10px;
+    padding: 30px 40px;
+    transform: translate(-50%, -50%);
+    z-index: 1100;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal input[type="password"] {
+    font-size: 1.5em;
+    padding: 8px 12px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #0f0;
+    background: black;
+    color: #0f0;
+    margin-bottom: 20px;
+  }
+  .close-btn {
+    cursor: pointer;
+    color: red;
+    font-size: 2em;
+    font-weight: bold;
+    position: absolute;
+    top: 8px;
+    right: 12px;
+  }
+</style>
 </head>
 <body>
   <div id="game" class="screen visible">
     <div id="instruction">Haz click en la pantalla cuando el número coincida</div>
-    <div id="passwordDisplay"></div>
+    <div id="passwordDisplay">- - - -</div>
     <div id="inputs">
       <div class="input">-</div>
       <div class="input">-</div>
@@ -294,179 +228,141 @@
     <button class="restart-btn" onclick="restartGame()">🔄 Reiniciar</button>
   </div>
 
-  <script>
-    const passwordLength = 4;
-    let currentNumbers = Array(passwordLength).fill('-');
-    const passwordDisplay = document.getElementById('passwordDisplay');
-    const inputDivs = [...document.querySelectorAll('#inputs .input')];
-    const errorMessage = document.getElementById('errorMessage');
-    const counterDisplay = document.getElementById('counter');
-    const timerDisplay = document.getElementById('timer');
-    const failScreen = document.getElementById('failScreen');
-    const fileSystem = document.getElementById('fileSystem');
+<script>
+  const passwordLength = 4;
+  let currentNumbers = Array(passwordLength).fill('-');
+  const passwordDisplay = document.getElementById('passwordDisplay');
+  const inputDivs = [...document.querySelectorAll('#inputs .input')];
+  const errorMessage = document.getElementById('errorMessage');
+  const counterDisplay = document.getElementById('counter');
+  const timerDisplay = document.getElementById('timer');
+  const failScreen = document.getElementById('failScreen');
+  const fileSystem = document.getElementById('fileSystem');
 
-    // Passwords:
-    const correctPassword = ['3', '6', '9', '2'];  // ejemplo
-    const topSecretPassword = '0077'; // contraseña para top secret
+  const correctPassword = ['3', '6', '9', '2']; 
+  const topSecretPassword = '0077';
 
-    let hackingCount = 0;
-    let timeLeft = 60;
-    let timerInterval;
+  let hackingCount = 0;
+  let timeLeft = 60;
+  let timerInterval;
 
-    // Velocidades de cambio originales:
-    const changeIntervals = [1000, 750, 600, 500]; // ms para cada dígito
+  const changeIntervals = [1000, 750, 600, 500];
 
-    // Control para cambios números
-    let intervals = [];
+  let intervals = [];
 
-    function generateRandomDigit() {
-      return Math.floor(Math.random() * 10).toString();
+  function generateRandomDigit() {
+    return Math.floor(Math.random() * 10).toString();
+  }
+
+  function changeDigit(index) {
+    let newValue = generateRandomDigit();
+    currentNumbers[index] = newValue;
+    inputDivs[index].textContent = newValue;
+  }
+
+  function startChangingNumbers() {
+    intervals.forEach(i => clearInterval(i));
+    intervals = [];
+    for (let i = 0; i < passwordLength; i++) {
+      intervals.push(setInterval(() => {
+        changeDigit(i);
+      }, changeIntervals[i]));
     }
+  }
 
-    // Cambiar números con animación pequeña
-    function changeDigit(index) {
-      let oldValue = currentNumbers[index];
-      let newValue = generateRandomDigit();
-      currentNumbers[index] = newValue;
-      // animar solo si cambia
-      if (oldValue !== newValue) {
-        const div = inputDivs[index];
-        div.classList.remove('animate');
-        void div.offsetWidth; // reinicia animación
-        div.textContent = newValue;
-        div.classList.add('animate');
-      }
-    }
+  function stopChangingNumbers() {
+    intervals.forEach(i => clearInterval(i));
+    intervals = [];
+  }
 
-    function startChangingNumbers() {
-      intervals.forEach(i => clearInterval(i));
-      intervals = [];
-      for (let i = 0; i < passwordLength; i++) {
-        // Cambiar cada número según velocidad específica
-        intervals.push(setInterval(() => {
-          changeDigit(i);
-        }, changeIntervals[i]));
-      }
-    }
+  function checkPassword() {
+    return currentNumbers.every((num, idx) => num === correctPassword[idx]);
+  }
 
-    function stopChangingNumbers() {
-      intervals.forEach(i => clearInterval(i));
-      intervals = [];
-    }
-
-    function updatePasswordDisplay() {
-      passwordDisplay.textContent = currentNumbers.join(' ');
-    }
-
-    function checkPassword() {
-      return currentNumbers.every((num, idx) => num === correctPassword[idx]);
-    }
-
-    function handleClick() {
-      if (checkPassword()) {
-        hackingCount++;
-        counterDisplay.textContent = `Hackeos exitosos: ${hackingCount} / 2`;
-        errorMessage.textContent = '';
-        // Animación éxito:
-        passwordDisplay.style.color = '#0f0';
-        passwordDisplay.style.transition = 'color 0.5s ease';
-        setTimeout(() => {
-          passwordDisplay.style.color = '#0f0';
-        }, 500);
-
-        if (hackingCount >= 2) {
-          stopChangingNumbers();
-          document.getElementById('game').style.display = 'none';
-          fileSystem.style.display = 'flex';
-          clearInterval(timerInterval);
-          timerDisplay.style.display = 'none';
-          counterDisplay.style.bottom = 'auto';
-          counterDisplay.style.top = '10px';
-          counterDisplay.style.right = '10px';
-          return;
-        }
-      } else {
-        errorMessage.textContent = 'Contraseña incorrecta';
-        // Efecto temblor suave
-        document.body.classList.add('shake');
-        setTimeout(() => document.body.classList.remove('shake'), 500);
-      }
-    }
-
-    // Temporizador
-    function startTimer() {
-      timeLeft = 60;
-      timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-      timerDisplay.classList.remove('warning');
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-        if (timeLeft <= 15) timerDisplay.classList.add('warning');
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          failScreen.classList.add('visible');
-          stopChangingNumbers();
-        }
-      }, 1000);
-    }
-
-    // Reiniciar juego
-    function restartGame() {
-      hackingCount = 0;
+  function handleClick() {
+    if (checkPassword()) {
+      hackingCount++;
       counterDisplay.textContent = `Hackeos exitosos: ${hackingCount} / 2`;
       errorMessage.textContent = '';
-      currentNumbers = Array(passwordLength).fill('-');
-      inputDivs.forEach(div => div.textContent = '-');
-      passwordDisplay.textContent = '- - - -';
-      document.getElementById('game').style.display = 'flex';
-      fileSystem.style.display = 'none';
-      failScreen.classList.remove('visible');
-      startChangingNumbers();
-      startTimer();
-    }
-
-    // Modal topsecret
-    function openFile(name) {
-      if (name === 'topsecret') {
-        document.getElementById('topsecret').style.display = 'block';
-        document.getElementById('topsecretInput').value = '';
-        document.getElementById('topsecretError').textContent = '';
-      } else if (name === 'bomb') {
-        // Simular pantalla cargando medio segundo
-        const bombModal = document.getElementById('bomb');
-        bombModal.style.display = 'block';
-        setTimeout(() => bombModal.style.display = 'none', 500);
-      } else {
-        // Archivos que no se abren - mostrar 3 segundos y luego cerrar
-        const modal = document.getElementById(name);
-        modal.style.display = 'block';
-        setTimeout(() => modal.style.display = 'none', 3000);
+      passwordDisplay.style.color = '#0f0';
+      if (hackingCount >= 2) {
+        stopChangingNumbers();
+        document.getElementById('game').style.display = 'none';
+        fileSystem.style.display = 'flex';
+        clearInterval(timerInterval);
+        timerDisplay.style.display = 'none';
+        return;
       }
+    } else {
+      errorMessage.textContent = 'Contraseña incorrecta';
+      document.body.classList.add('shake');
+      setTimeout(() => document.body.classList.remove('shake'), 500);
     }
-    function hideModal(name) {
-      document.getElementById(name).style.display = 'none';
-    }
+  }
 
-    function checkTopSecretPassword() {
-      const input = document.getElementById('topsecretInput').value;
-      if (input === topSecretPassword) {
-        alert('Acceso concedido a TOP SECRET');
-        hideModal('topsecret');
-      } else {
-        document.getElementById('topsecretError').textContent = 'Contraseña incorrecta';
+  function startTimer() {
+    timeLeft = 60;
+    timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
+    timerDisplay.classList.remove('warning');
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
+      if (timeLeft <= 15) timerDisplay.classList.add('warning');
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        failScreen.classList.add('visible');
+        stopChangingNumbers();
       }
+    }, 1000);
+  }
+
+  function restartGame() {
+    hackingCount = 0;
+    counterDisplay.textContent = `Hackeos exitosos: ${hackingCount} / 2`;
+    errorMessage.textContent = '';
+    currentNumbers = Array(passwordLength).fill('-');
+    inputDivs.forEach(div => div.textContent = '-');
+    passwordDisplay.textContent = '- - - -';
+    document.getElementById('game').style.display = 'flex';
+    fileSystem.style.display = 'none';
+    failScreen.classList.remove('visible');
+    startChangingNumbers();
+    startTimer();
+  }
+
+  function openFile(name) {
+    if (name === 'topsecret') {
+      document.getElementById('topsecret').style.display = 'block';
+      document.getElementById('topsecretInput').value = '';
+      document.getElementById('topsecretError').textContent = '';
+    } else if (name === 'bomb') {
+      const bombModal = document.getElementById('bomb');
+      bombModal.style.display = 'block';
+      setTimeout(() => bombModal.style.display = 'none', 500);
+    } else {
+      const modal = document.getElementById(name);
+      modal.style.display = 'block';
+      setTimeout(() => modal.style.display = 'none', 3000);
     }
+  }
+  function hideModal(name) {
+    document.getElementById(name).style.display = 'none';
+  }
+  function checkTopSecretPassword() {
+    const input = document.getElementById('topsecretInput').value;
+    if (input === topSecretPassword) {
+      alert('Acceso concedido a TOP SECRET');
+      hideModal('topsecret');
+    } else {
+      document.getElementById('topsecretError').textContent = 'Contraseña incorrecta';
+    }
+  }
 
-    // Inicialización
-    window.onload = () => {
-      currentNumbers = Array(passwordLength).fill('-');
-      updatePasswordDisplay();
-      inputDivs.forEach(div => div.textContent = '-');
-      startChangingNumbers();
-      startTimer();
-
-      document.getElementById('game').addEventListener('click', handleClick);
-    };
-  </script>
+  window.onload = () => {
+    startChangingNumbers();
+    startTimer();
+    document.getElementById('game').addEventListener('click', handleClick);
+  };
+</script>
 </body>
 </html>
