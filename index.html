@@ -5,8 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interfaz de Seguridad Nacional</title>
   <style>
+    @keyframes matrixRain {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 1000px; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
     body {
-      background: url('https://www.transparenttextures.com/patterns/dark-mosaic.png') repeat;
+      background: black;
       color: #0f0;
       font-family: 'Courier New', Courier, monospace;
       display: flex;
@@ -15,6 +24,20 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://media.giphy.com/media/l0HlQ7LRal7hZ4tGo/giphy.gif') repeat;
+      background-size: cover;
+      opacity: 0.1;
+      z-index: -1;
+      animation: matrixRain 10s linear infinite;
     }
     h2 {
       font-size: 3em;
@@ -33,7 +56,7 @@
       gap: 40px;
       font-size: 5em;
       font-weight: bold;
-      color: #0f0;
+      color: lime;
       letter-spacing: 15px;
       background-color: rgba(0, 0, 0, 0.8);
       padding: 30px;
@@ -54,6 +77,14 @@
       width: 110px;
       text-align: center;
       border-radius: 10px;
+      transition: all 0.2s;
+    }
+    .changing {
+      animation: slideNumber 0.3s ease-out;
+    }
+    @keyframes slideNumber {
+      0% { transform: translateY(-20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
     }
     #instruction {
       margin-bottom: 30px;
@@ -72,18 +103,19 @@
     }
     .files {
       display: flex;
-      flex-wrap: wrap;
-      gap: 50px;
+      flex-direction: column;
+      gap: 20px;
       margin-top: 40px;
       justify-content: center;
+      align-items: center;
     }
     .file {
       background: linear-gradient(145deg, #ffe100, #ffcc00);
       color: black;
       border: 2px solid #888;
-      padding: 50px 40px;
-      width: 240px;
-      height: 160px;
+      padding: 30px 40px;
+      width: 300px;
+      height: 80px;
       text-align: center;
       cursor: pointer;
       box-shadow: 4px 4px 12px #222;
@@ -135,6 +167,18 @@
       color: #f00;
       font-size: 1.5em;
     }
+    #counter, #timer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 1.5em;
+      color: #0f0;
+    }
+    #counter {
+      right: 20px;
+    }
+    #timer {
+      left: 20px;
+    }
     @keyframes popup {
       from { transform: scale(0.8) translate(-50%, -50%); opacity: 0; }
       to { transform: scale(1) translate(-50%, -50%); opacity: 1; }
@@ -152,8 +196,9 @@
       <div class="input">-</div>
     </div>
     <div id="errorMessage"></div>
+    <div id="counter">Hackeos exitosos: 0 / 2</div>
+    <div id="timer">Tiempo restante: 60s</div>
   </div>
-
   <div id="fileSystem" class="file-system">
     <h2>📁 ARCHIVOS DEL SISTEMA</h2>
     <div class="files">
@@ -163,36 +208,47 @@
       <div class="file" onclick="openFile('bomb')">💣 Desactivación Bombas</div>
     </div>
   </div>
-
   <div id="topsecret" class="modal">
     <div style="font-size: 1.5em; margin-bottom: 20px; text-align:center">Introduce la contraseña para acceder a<br><strong>TOP SECRET</strong>:</div>
     <input type="password" />
     <div class="close-btn" onclick="hideModal('topsecret')">❌ Cerrar</div>
   </div>
-
-  <div id="doc1" class="modal">
-    <div style="font-size: 1.4em; margin-bottom: 10px">Cargando...</div>
-  </div>
-
-  <div id="doc2" class="modal">
-    <div style="font-size: 1.4em; margin-bottom: 10px">Cargando...</div>
-  </div>
-
-  <div id="bomb" class="modal">
-    <h2 style="color: red">¿Qué cable cortar para desactivar la bomba?</h2>
-    <div class="close-btn" onclick="hideModal('bomb')">❌ Cerrar</div>
-  </div>
-
+  <div id="doc1" class="modal"></div>
+  <div id="doc2" class="modal"></div>
+  <div id="bomb" class="modal"></div>
   <script>
     let password = [];
     let userInput = [null, null, null, null];
     let currentSlot = 0;
     let interval;
+    let successCount = 0;
+    let timeLeft = 60;
+    let timer;
 
     function generatePassword() {
       password = Array.from({ length: 4 }, () => Math.floor(Math.random() * 9) + 1);
-      const display = document.getElementById('passwordDisplay');
-      display.innerHTML = password.join(' ');
+      document.getElementById('passwordDisplay').innerHTML = password.join(' ');
+    }
+
+    function updateCounter() {
+      document.getElementById('counter').textContent = `Hackeos exitosos: ${successCount} / 2`;
+    }
+
+    function updateTimer() {
+      document.getElementById('timer').textContent = `Tiempo restante: ${timeLeft}s`;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        document.body.classList.add('shake');
+        document.getElementById('errorMessage').textContent = '⛔ Tiempo agotado. Hackeo fallido.';
+        setTimeout(() => location.reload(), 3000);
+      }
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimer();
+      }, 1000);
     }
 
     function resetGame(error = false) {
@@ -200,7 +256,13 @@
       currentSlot = 0;
       clearInterval(interval);
       document.querySelectorAll('#inputs .input').forEach(el => el.textContent = '-');
-      document.getElementById('errorMessage').textContent = error ? '❌ Contraseña incorrecta. Reiniciando...' : '';
+      if (error) {
+        document.body.classList.add('shake');
+        document.getElementById('errorMessage').textContent = '❌ Contraseña incorrecta. Reiniciando...';
+        setTimeout(() => document.body.classList.remove('shake'), 500);
+      } else {
+        document.getElementById('errorMessage').textContent = '';
+      }
       generatePassword();
       setTimeout(startSlot, 1000);
     }
@@ -209,10 +271,12 @@
       const box = document.querySelectorAll('#inputs .input')[currentSlot];
       let number = 1;
       box.textContent = number;
-      let speed = 1000 - (currentSlot * 200);
+      let speed = 800 - (currentSlot * 200);
       interval = setInterval(() => {
         number = number % 9 + 1;
         box.textContent = number;
+        box.classList.add('changing');
+        setTimeout(() => box.classList.remove('changing'), 200);
       }, speed);
 
       window.onclick = () => {
@@ -226,8 +290,14 @@
           } else {
             setTimeout(() => {
               if (JSON.stringify(userInput) === JSON.stringify(password)) {
-                document.getElementById('game').classList.remove('visible');
-                document.getElementById('fileSystem').classList.add('visible');
+                successCount++;
+                updateCounter();
+                if (successCount >= 2) {
+                  document.getElementById('game').classList.remove('visible');
+                  document.getElementById('fileSystem').classList.add('visible');
+                } else {
+                  resetGame();
+                }
               } else {
                 resetGame(true);
               }
@@ -241,7 +311,6 @@
       const modal = document.getElementById(id);
       modal.innerHTML = '<div style="font-size:1.4em; margin-bottom:10px">Cargando...</div>';
       modal.classList.add('visible');
-
       setTimeout(() => {
         if (id === 'bomb') {
           modal.innerHTML = '<h2 style="color:red">¿Qué cable cortar para desactivar la bomba?</h2><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
@@ -258,6 +327,9 @@
     }
 
     generatePassword();
+    updateCounter();
+    updateTimer();
+    startTimer();
     startSlot();
   </script>
 </body>
