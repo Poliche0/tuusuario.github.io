@@ -175,17 +175,34 @@
       color: #f00;
       font-size: 1.5em;
     }
-    #counter, #timer {
-      position: absolute;
-      bottom: 20px;
-      font-size: 1.5em;
+    /* ---- NUEVO TIMER ---- */
+    #timer {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3.5em;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      z-index: 100;
+      background: rgba(0,0,0,0.85);
+      border: 4px solid #0f0;
+      border-radius: 18px;
+      padding: 16px 56px;
       color: #0f0;
+      box-shadow: 0 0 30px #000, 0 0 8px #0f0;
+      transition: border-color 0.2s, color 0.2s;
+      text-align: center;
+      letter-spacing: 2px;
+      user-select: none;
+      pointer-events: none;
     }
     #counter {
+      position: absolute;
+      bottom: 20px;
       right: 20px;
-    }
-    #timer {
-      left: 20px;
+      font-size: 1.5em;
+      color: #0f0;
     }
     #accessGranted {
       position: fixed;
@@ -203,6 +220,7 @@
   </style>
 </head>
 <body>
+  <div id="timer"></div>
   <div id="accessGranted" class="screen">
     <h2 style="font-size: 3em; color: lime;">🔓 ACCESO CONCEDIDO</h2>
   </div>
@@ -217,7 +235,6 @@
     </div>
     <div id="errorMessage"></div>
     <div id="counter">Hackeos exitosos: 0 / 2</div>
-    <div id="timer">Tiempo restante: 60s</div>
   </div>
   <div id="fileSystem" class="file-system">
     <h2>📁 ARCHIVOS DEL SISTEMA</h2>
@@ -234,27 +251,49 @@
   <div id="bomb" class="modal"></div>
   <audio id="accessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
   <script>
+    // --- CONTRASEÑA Y JUEGO ---
     let password = [];
     let userInput = [null, null, null, null];
     let currentSlot = 0;
     let interval;
     let successCount = 0;
-    let timeLeft = 60;
-    let timer;
 
-    function generatePassword() {
-      password = Array.from({ length: 4 }, () => Math.floor(Math.random() * 9) + 1);
-      document.getElementById('passwordDisplay').innerHTML = password.join(' ');
+    // --- NUEVO TIMER ---
+    let timeLeft = 60.00;
+    let timer;
+    let timerActive = true;
+    let timerColorInterval;
+    let timerColorState = true;
+    let colorChangeRate = 500;
+
+    function formatTime(t) {
+      return (t > 0 ? t : 0).toFixed(2).replace('.', ',') + 's';
     }
 
-    function updateCounter() {
-      document.getElementById('counter').textContent = `Hackeos exitosos: ${successCount} / 2`;
+    function animateTimerColor() {
+      clearInterval(timerColorInterval);
+      timerColorInterval = setInterval(() => {
+        timerColorState = !timerColorState;
+        const timerDiv = document.getElementById('timer');
+        if (timerColorState) {
+          timerDiv.style.color = '#0f0';
+          timerDiv.style.borderColor = '#0f0';
+          timerDiv.style.boxShadow = '0 0 30px #000, 0 0 8px #0f0';
+        } else {
+          timerDiv.style.color = '#f00';
+          timerDiv.style.borderColor = '#f00';
+          timerDiv.style.boxShadow = '0 0 30px #000, 0 0 8px #f00';
+        }
+      }, colorChangeRate);
     }
 
     function updateTimer() {
-      document.getElementById('timer').textContent = `Tiempo restante: ${timeLeft}s`;
-      if (timeLeft <= 0) {
+      const timerDiv = document.getElementById('timer');
+      timerDiv.textContent = `⏳ ${formatTime(timeLeft)}`;
+      if (timeLeft <= 0 && timerActive) {
+        timerActive = false;
         clearInterval(timer);
+        clearInterval(timerColorInterval);
         document.body.classList.add('shake');
         document.getElementById('errorMessage').textContent = '⛔ Tiempo agotado. Hackeo fallido.';
         setTimeout(() => location.reload(), 3000);
@@ -262,10 +301,44 @@
     }
 
     function startTimer() {
+      timerActive = true;
+      timeLeft = 60.00;
+      colorChangeRate = 500;
+      animateTimerColor();
+      updateTimer();
       timer = setInterval(() => {
-        timeLeft--;
+        if (!timerActive) return;
+        timeLeft -= 0.02;
+        if (timeLeft < 0) timeLeft = 0;
         updateTimer();
-      }, 1000);
+
+        // Cambia a 250ms el ritmo del color cuando quedan 15s
+        if (timeLeft <= 15 && colorChangeRate !== 250) {
+          colorChangeRate = 250;
+          animateTimerColor();
+        }
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          clearInterval(timerColorInterval);
+        }
+      }, 20);
+    }
+
+    function stopTimer() {
+      timerActive = false;
+      clearInterval(timer);
+      clearInterval(timerColorInterval);
+      document.getElementById('timer').style.display = "none";
+    }
+
+    // --- LÓGICA DEL JUEGO ---
+    function generatePassword() {
+      password = Array.from({ length: 4 }, () => Math.floor(Math.random() * 9) + 1);
+      document.getElementById('passwordDisplay').innerHTML = password.join(' ');
+    }
+
+    function updateCounter() {
+      document.getElementById('counter').textContent = `Hackeos exitosos: ${successCount} / 2`;
     }
 
     function resetGame(error = false) {
@@ -288,7 +361,8 @@
       const box = document.querySelectorAll('#inputs .input')[currentSlot];
       let number = 1;
       box.textContent = number;
-      let speed = 1400 - (currentSlot * 300);
+      const speeds = [1400, 1100, 800, 500]; // última casilla: 500ms
+      let speed = speeds[currentSlot];
       interval = setInterval(() => {
         number = number % 9 + 1;
         box.textContent = number;
@@ -310,17 +384,13 @@
                 successCount++;
                 updateCounter();
                 if (successCount >= 2) {
-                  clearInterval(timer);
-                  document.getElementById('timer').style.display = "none";
+                  stopTimer();
                   document.getElementById('game').classList.remove('visible');
-
                   const accessScreen = document.getElementById('accessGranted');
                   const fileSystem = document.getElementById('fileSystem');
                   const sound = document.getElementById('accessSound');
-
                   accessScreen.classList.add('visible');
                   sound.play();
-
                   setTimeout(() => {
                     accessScreen.classList.remove('visible');
                     fileSystem.classList.add('visible');
@@ -346,19 +416,23 @@
           modal.innerHTML = '<h2 style="color:red">¿Qué cable cortar para desactivar la bomba?</h2><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
         } else if (id === 'topsecret') {
           modal.innerHTML = '<div style="font-size: 1.5em; margin-bottom: 20px; text-align:center">Introduce la contraseña para acceder a<br><strong>TOP SECRET</strong>:</div><input type="password" /><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
+        } else if (id === 'doc1') {
+          modal.innerHTML = '<div style="font-size:1.2em;">Proyecto FASE-17: <br>Archivo clasificado.<br>Acceso restringido.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
+        } else if (id === 'doc2') {
+          modal.innerHTML = '<div style="font-size:1.2em;">Informe R-41: <br>Información confidencial.<br>Solo personal autorizado.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
         } else {
           modal.innerHTML = '<div style="font-size:1.4em; color:red">❌ Error al abrir el archivo</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
         }
-      }, id === 'bomb' ? 500 : 3000);
+      }, id === 'bomb' ? 500 : 1500);
     }
 
     function hideModal(id) {
       document.getElementById(id).classList.remove('visible');
     }
 
+    // --- INICIO ---
     generatePassword();
     updateCounter();
-    updateTimer();
     startTimer();
     startSlot();
   </script>
