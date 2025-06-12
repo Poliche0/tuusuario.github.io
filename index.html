@@ -288,7 +288,7 @@
       const box = document.querySelectorAll('#inputs .input')[currentSlot];
       let number = 1;
       box.textContent = number;
-      let speed = 800 - (currentSlot * 200);
+      let speed = 1400 - (currentSlot * 300);
       interval = setInterval(() => {
         number = number % 9 + 1;
         box.textContent = number;
