@@ -507,7 +507,8 @@
       const box = document.querySelectorAll('#inputs .input')[currentSlot];
       let number = 1;
       box.textContent = number;
-      const speeds = [1400, 1100, 800, 500];
+      // Velocidades fijas: 800ms, 700ms, 600ms, 550ms
+      const speeds = [800, 700, 600, 550];
       let speed = speeds[currentSlot];
       interval = setInterval(() => {
         number = number % 9 + 1;
