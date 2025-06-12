@@ -14,6 +14,18 @@
       20%, 60% { transform: translateX(-5px); }
       40%, 80% { transform: translateX(5px); }
     }
+    @keyframes flash {
+      0%, 100% { background: black; color: lime; }
+      50% { background: white; color: black; }
+    }
+    @keyframes popup {
+      from { transform: scale(0.8) translate(-50%, -50%); opacity: 0; }
+      to { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+    }
+    @keyframes slideNumber {
+      0% { transform: translateY(-20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
     body {
       background: black;
       color: #0f0;
@@ -81,10 +93,6 @@
     }
     .changing {
       animation: slideNumber 0.3s ease-out;
-    }
-    @keyframes slideNumber {
-      0% { transform: translateY(-20px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
     }
     #instruction {
       margin-bottom: 30px;
@@ -179,13 +187,25 @@
     #timer {
       left: 20px;
     }
-    @keyframes popup {
-      from { transform: scale(0.8) translate(-50%, -50%); opacity: 0; }
-      to { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+    #accessGranted {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: flash 0.8s ease-in-out 2;
     }
   </style>
 </head>
 <body>
+  <div id="accessGranted" class="screen">
+    <h2 style="font-size: 3em; color: lime;">🔓 ACCESO CONCEDIDO</h2>
+  </div>
   <div id="game" class="screen visible">
     <div id="instruction">Haz click en la pantalla cuando el número coincida</div>
     <div class="digits" id="passwordDisplay"></div>
@@ -208,14 +228,11 @@
       <div class="file" onclick="openFile('bomb')">💣 Desactivación Bombas</div>
     </div>
   </div>
-  <div id="topsecret" class="modal">
-    <div style="font-size: 1.5em; margin-bottom: 20px; text-align:center">Introduce la contraseña para acceder a<br><strong>TOP SECRET</strong>:</div>
-    <input type="password" />
-    <div class="close-btn" onclick="hideModal('topsecret')">❌ Cerrar</div>
-  </div>
+  <div id="topsecret" class="modal"></div>
   <div id="doc1" class="modal"></div>
   <div id="doc2" class="modal"></div>
   <div id="bomb" class="modal"></div>
+  <audio id="accessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
   <script>
     let password = [];
     let userInput = [null, null, null, null];
@@ -293,8 +310,21 @@
                 successCount++;
                 updateCounter();
                 if (successCount >= 2) {
+                  clearInterval(timer);
+                  document.getElementById('timer').style.display = "none";
                   document.getElementById('game').classList.remove('visible');
-                  document.getElementById('fileSystem').classList.add('visible');
+
+                  const accessScreen = document.getElementById('accessGranted');
+                  const fileSystem = document.getElementById('fileSystem');
+                  const sound = document.getElementById('accessSound');
+
+                  accessScreen.classList.add('visible');
+                  sound.play();
+
+                  setTimeout(() => {
+                    accessScreen.classList.remove('visible');
+                    fileSystem.classList.add('visible');
+                  }, 2000);
                 } else {
                   resetGame();
                 }
