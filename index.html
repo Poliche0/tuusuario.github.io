@@ -5,21 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interfaz de Seguridad Nacional</title>
   <style>
-    /* Animaciones */
     @keyframes matrixRain {
       0% { background-position: 0 0; }
       100% { background-position: 0 1000px; }
     }
-    @keyframes slideNumber {
-      0% { transform: translateY(-20px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
     }
-    @keyframes flash {
-      0%, 100% { background: black; color: lime; }
-      50% { background: white; color: black; }
+    @keyframes startup {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
     }
-
-    /* Estilo general */
+    @keyframes popup {
+      from { transform: scale(0.8) translate(-50%, -50%); opacity: 0; }
+      to { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+    }
     body {
       background: black;
       color: #0f0;
@@ -31,6 +33,10 @@
       height: 100vh;
       margin: 0;
       overflow: hidden;
+      animation: startup 1.5s ease-out;
+    }
+    body.shake {
+      animation: shake 0.5s;
     }
     body::before {
       content: "";
@@ -45,85 +51,118 @@
       z-index: -1;
       animation: matrixRain 10s linear infinite;
     }
-
-    .inputs {
-      display: flex;
-      gap: 40px;
-      margin: 30px 0;
-    }
-    .input {
-      background-color: #111;
-      padding: 40px;
-      font-size: 4em;
-      border: 4px solid #0f0;
-      width: 110px;
-      text-align: center;
-      border-radius: 10px;
-      transition: all 0.2s;
-    }
-    .changing {
-      animation: slideNumber 0.3s ease-out;
-    }
-    #accessGranted {
+    .full-error {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background: black;
-      z-index: 100;
+      color: red;
       display: none;
-      justify-content: center;
       align-items: center;
-      animation: flash 0.8s ease-in-out 2;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 2em;
+      z-index: 100;
+    }
+    .full-error.visible {
+      display: flex;
+    }
+    .restart-btn {
+      margin-top: 30px;
+      padding: 10px 30px;
+      font-size: 1.2em;
+      border: 2px solid red;
+      background: transparent;
+      color: red;
+      cursor: pointer;
+    }
+    #timer {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #0f0;
+      transition: color 0.3s ease;
+    }
+    #timer.warning {
+      color: red;
     }
   </style>
 </head>
 <body>
-  <div id="inputs" class="inputs">
-    <div class="input">0</div>
-    <div class="input">0</div>
-    <div class="input">0</div>
-    <div class="input">0</div>
+  <div id="game" class="screen visible">
+    <div id="instruction">Haz click en la pantalla cuando el número coincida</div>
+    <div class="digits" id="passwordDisplay"></div>
+    <div class="inputs" id="inputs">
+      <div class="input">-</div>
+      <div class="input">-</div>
+      <div class="input">-</div>
+      <div class="input">-</div>
+    </div>
+    <div id="errorMessage"></div>
+    <div id="counter">Hackeos exitosos: 0 / 2</div>
+    <div id="timer">Tiempo restante: 60s</div>
   </div>
-
+  <div id="fileSystem" class="file-system">
+    <h2>📁 ARCHIVOS DEL SISTEMA</h2>
+    <div class="files">
+      <div class="file" onclick="openFile('topsecret')">🔐 TOP SECRET</div>
+      <div class="file" onclick="openFile('doc1')">📁 Proyecto FASE-17</div>
+      <div class="file" onclick="openFile('doc2')">📁 Informe R-41</div>
+      <div class="file" onclick="openFile('bomb')">💣 Desactivación Bombas</div>
+    </div>
+  </div>
+  <div id="topsecret" class="modal">
+    <div style="font-size: 1.5em; margin-bottom: 20px; text-align:center">Introduce la contraseña para acceder a<br><strong>TOP SECRET</strong>:</div>
+    <input type="password" />
+    <div class="close-btn" onclick="hideModal('topsecret')">❌ Cerrar</div>
+  </div>
+  <div id="doc1" class="modal"></div>
+  <div id="doc2" class="modal"></div>
+  <div id="bomb" class="modal"></div>
+  <div id="failScreen" class="full-error">
+    <div>⛔ ERROR DE HACKEO - TIEMPO AGOTADO</div>
+    <button class="restart-btn" onclick="restartGame()">🔄 Reiniciar</button>
+  </div>
   <script>
-    let currentSlot = 0;
-    let interval;
-    const userInput = [null, null, null, null];
-    const speeds = [1000, 833, 666, 500]; // de 1s a 0.5s
+    let timerInterval;
+    let timeLeft = 60;
+    const timerDisplay = document.getElementById('timer');
 
-    function startSlot() {
-      const box = document.querySelectorAll('#inputs .input')[currentSlot];
-      let number = 1;
-      box.textContent = number;
-
-      const speed = speeds[currentSlot];
-      interval = setInterval(() => {
-        number = number % 9 + 1;
-        box.textContent = number;
-        box.classList.add('changing');
-        setTimeout(() => box.classList.remove('changing'), 200);
-      }, speed);
-
-      function handleClick() {
-        if (userInput[currentSlot] === null) {
-          userInput[currentSlot] = number;
-          clearInterval(interval);
-          window.removeEventListener('click', handleClick);
-          currentSlot++;
-          if (currentSlot < 4) {
-            setTimeout(startSlot, 500);
-          } else {
-            console.log("Secuencia final:", userInput);
-          }
-        }
-      }
-
-      window.addEventListener('click', handleClick);
+    function startTimer() {
+      timeLeft = 60;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
+        if (timeLeft <= 15) timerDisplay.classList.add('warning');
+        if (timeLeft <= 0) triggerFailure();
+      }, 1000);
     }
 
-    window.onload = startSlot;
+    function triggerFailure() {
+      clearInterval(timerInterval);
+      document.body.classList.add('shake');
+      setTimeout(() => document.body.classList.remove('shake'), 500);
+      document.getElementById('failScreen').classList.add('visible');
+    }
+
+    function restartGame() {
+      document.getElementById('failScreen').classList.remove('visible');
+      timerDisplay.classList.remove('warning');
+      document.getElementById('counter').textContent = 'Hackeos exitosos: 0 / 2';
+      startTimer();
+    }
+
+    window.onload = () => {
+      startTimer();
+    }
+
+    // Configuración de velocidad para los números
+    const speeds = [1000, 800, 600, 500]; // 1s a 0.5s
+    // Lógica para usar `speeds` al avanzar los números por casilla vendría aquí
   </script>
 </body>
 </html>
