@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="ca">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interfaz de Seguridad Nacional</title>
+  <title>Interfície de Seguretat Nacional</title>
   <style>
     html, body {
       height: 100%;
@@ -338,12 +338,12 @@
 </head>
 <body>
   <div id="fullscreenOverlay">
-    <h2 style="margin-bottom:32px; font-size:2em;">Haz clic para comenzar en pantalla completa</h2>
-    <button onclick="startFullscreenAndGame()">Empezar</button>
+    <h2 style="margin-bottom:32px; font-size:2em;">Fes clic per començar en pantalla completa</h2>
+    <button onclick="startFullscreenAndGame()">Començar</button>
   </div>
   <div id="mainGameBox" style="display:none;">
     <div id="game" class="screen visible">
-      <div id="instruction">Haz click en la pantalla cuando el número coincida</div>
+      <div id="instruction">Fes clic a la pantalla quan el número coincideixi</div>
       <div id="timer"></div>
       <div class="digits" id="passwordDisplay"></div>
       <div class="inputs" id="inputs">
@@ -353,27 +353,27 @@
         <div class="input">-</div>
       </div>
       <div id="errorMessage"></div>
-      <div id="counter">Firewalls atravesados: 0 / 2</div>
+      <div id="counter">Tallafocs travessats: 0 / 2</div>
     </div>
   </div>
   <div id="fileSystem" class="file-system">
-    <h2>📁 ARCHIVOS DEL SISTEMA</h2>
+    <h2>📁 ARXIUS DEL SISTEMA</h2>
     <div class="files">
       <div class="file" onclick="openFile('topsecret')">📁 TOP SECRET</div>
-      <div class="file" onclick="openFile('doc1')">📁 Proyecto FASE-17</div>
+      <div class="file" onclick="openFile('doc1')">📁 Projecte FASE-17</div>
       <div class="file" onclick="openFile('doc2')">📁 Informe R-41</div>
-      <div class="file" onclick="openFile('bomb')">📁 Desactivación Bombas</div>
+      <div class="file" onclick="openFile('bomb')">📁 Desactivació Bombes</div>
     </div>
   </div>
   <div id="accessGranted" class="screen">
-    <h2 style="font-size: 2.2em; color: lime;">🔓 ACCESO CONCEDIDO</h2>
+    <h2 style="font-size: 2.2em; color: lime;">🔓 ACCÉS CONCEDIT</h2>
   </div>
   <div id="topsecret" class="modal"></div>
   <div id="doc1" class="modal"></div>
   <div id="doc2" class="modal"></div>
   <div id="bomb" class="modal"></div>
   <div id="failedOverlay" style="display:none;">
-    <h1>HACKEO<br>FALLIDO</h1>
+    <h1>HACKEIG<br>FALLIT</h1>
     <button onclick="reiniciarTodo()">Reintentar</button>
   </div>
   <audio id="accessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
@@ -480,7 +480,7 @@
       document.getElementById('passwordDisplay').innerHTML = password.join(' ');
     }
     function updateCounter() {
-      document.getElementById('counter').textContent = `Firewalls atravesados: ${successCount} / 2`;
+      document.getElementById('counter').textContent = `Tallafocs travessats: ${successCount} / 2`;
     }
     function resetGame(error = false) {
       userInput = [null, null, null, null];
@@ -490,7 +490,7 @@
       const errorDiv = document.getElementById('errorMessage');
       if (error) {
         document.body.classList.add('shake');
-        errorDiv.textContent = 'Fallido';
+        errorDiv.textContent = 'Fallit';
         errorDiv.style.opacity = 1;
         setTimeout(() => {
           document.body.classList.remove('shake');
@@ -507,7 +507,7 @@
       const box = document.querySelectorAll('#inputs .input')[currentSlot];
       let number = 1;
       box.textContent = number;
-      // Velocidades fijas: 800ms, 700ms, 600ms, 550ms
+      // Velocitats fixes: 800ms, 700ms, 600ms, 550ms
       const speeds = [800, 700, 600, 550];
       let speed = speeds[currentSlot];
       interval = setInterval(() => {
@@ -554,19 +554,19 @@
     }
     function openFile(id) {
       const modal = document.getElementById(id);
-      modal.innerHTML = '<div style="font-size:1.08em; margin-bottom:8px">Cargando...</div>';
+      modal.innerHTML = '<div style="font-size:1.08em; margin-bottom:8px">Carregant...</div>';
       modal.classList.add('visible');
       setTimeout(() => {
         if (id === 'bomb') {
-          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivación Bombas</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">El cable de desactivación de bombas generalizado es el <b style="color:red;">rojo</b></div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
+          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivació Bombes</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">El cable de desactivació de bombes generalitzat és el <b style="color:red;">vermell</b></div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
         } else if (id === 'topsecret') {
-          modal.innerHTML = '<div style="font-size: 1.1em; margin-bottom: 12px; text-align:center">Introduce la contraseña para acceder a<br><strong>TOP SECRET</strong>:</div><input type="password" /><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
+          modal.innerHTML = '<div style="font-size: 1.1em; margin-bottom: 12px; text-align:center">Introdueix la contrasenya per accedir a<br><strong>TOP SECRET</strong>:</div><input type="password" /><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
         } else if (id === 'doc1') {
-          modal.innerHTML = '<div style="font-size:1em;">Proyecto FASE-17: <br>Archivo clasificado.<br>Acceso restringido.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
+          modal.innerHTML = '<div style="font-size:1em;">Projecte FASE-17: <br>Arxiu classificat.<br>Accés restringit.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
         } else if (id === 'doc2') {
-          modal.innerHTML = '<div style="font-size:1em;">Informe R-41: <br>Información confidencial.<br>Solo personal autorizado.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
+          modal.innerHTML = '<div style="font-size:1em;">Informe R-41: <br>Informació confidencial.<br>Només personal autoritzat.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
         } else {
-          modal.innerHTML = '<div style="font-size:1em; color:red">❌ Error al abrir el archivo</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
+          modal.innerHTML = '<div style="font-size:1em; color:red">❌ Error en obrir l\'arxiu</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
         }
       }, id === 'bomb' ? 500 : 1000);
     }
