@@ -95,7 +95,7 @@
       animation: slideNumber 0.3s ease-out;
     }
     #instruction {
-      margin-bottom: 30px;
+      margin-bottom: 18px;
       font-size: 2em;
       color: #fff;
       text-align: center;
@@ -103,6 +103,28 @@
       padding: 15px 30px;
       border: 2px solid #0f0;
       border-radius: 10px;
+    }
+    /* TEMPORIZADOR DEBAJO DE LAS INSTRUCCIONES */
+    #timer {
+      /* Ya no es fixed */
+      position: static;
+      margin-bottom: 24px;
+      font-size: 3.5em;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      background: rgba(0,0,0,0.85);
+      border: 4px solid #0f0;
+      border-radius: 18px;
+      padding: 16px 56px;
+      color: #0f0;
+      box-shadow: 0 0 30px #000, 0 0 8px #0f0;
+      transition: border-color 0.2s, color 0.2s;
+      text-align: center;
+      letter-spacing: 2px;
+      user-select: none;
+      pointer-events: none;
+      z-index: 1;
+      display: block;
     }
     #errorMessage {
       margin-top: 15px;
@@ -175,34 +197,10 @@
       color: #f00;
       font-size: 1.5em;
     }
-    /* ---- NUEVO TIMER ---- */
-    #timer {
-      position: fixed;
-      top: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 3.5em;
-      font-family: 'Courier New', Courier, monospace;
-      font-weight: bold;
-      z-index: 100;
-      background: rgba(0,0,0,0.85);
-      border: 4px solid #0f0;
-      border-radius: 18px;
-      padding: 16px 56px;
-      color: #0f0;
-      box-shadow: 0 0 30px #000, 0 0 8px #0f0;
-      transition: border-color 0.2s, color 0.2s;
-      text-align: center;
-      letter-spacing: 2px;
-      user-select: none;
-      pointer-events: none;
-    }
     #counter {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
       font-size: 1.5em;
       color: #0f0;
+      margin-top: 18px;
     }
     #accessGranted {
       position: fixed;
@@ -220,12 +218,12 @@
   </style>
 </head>
 <body>
-  <div id="timer"></div>
   <div id="accessGranted" class="screen">
     <h2 style="font-size: 3em; color: lime;">🔓 ACCESO CONCEDIDO</h2>
   </div>
-  <div id="game" class="screen visible">
+  <div id="game" class="screen visible" style="flex-direction:column;align-items:center;">
     <div id="instruction">Haz click en la pantalla cuando el número coincida</div>
+    <div id="timer"></div>
     <div class="digits" id="passwordDisplay"></div>
     <div class="inputs" id="inputs">
       <div class="input">-</div>
@@ -306,6 +304,7 @@
       colorChangeRate = 500;
       animateTimerColor();
       updateTimer();
+      document.getElementById('timer').style.display = "block"; // Asegura que el temporizador esté visible
       timer = setInterval(() => {
         if (!timerActive) return;
         timeLeft -= 0.02;
