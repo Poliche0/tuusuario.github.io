@@ -57,8 +57,6 @@
       0% { transform: translateY(-28px); opacity: 0;}
       100% { transform: translateY(0); opacity: 1;}
     }
-
-    /* Overlay para fullscreen */
     #fullscreenOverlay {
       position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000;
       z-index:10000;
@@ -68,19 +66,16 @@
       font-size: 1.3em; color: #000; background: #0f0; border:none; border-radius:10px;
       padding:18px 48px; font-weight:bold; box-shadow:0 0 14px #0f0; cursor:pointer;
     }
-
-    /* CONTENEDOR JUEGO - ahora más ancho, sin borde ni sombra */
+    /* Caja principal más ancha, sin borde ni sombra */
     #mainGameBox {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       background: rgba(0,0,0,0.93);
-      /* border: 2.7px solid #0f0; */
       border-radius: 28px;
-      /* box-shadow: 0 0 40px #000, 0 0 12px #0f0; */
-      padding: 48px 50px 36px 50px;
-      min-width: 390px;
+      padding: 48px 60px 36px 60px;
+      min-width: 410px;
       max-width: 100vw;
       min-height: 440px;
       max-height: 96vh;
@@ -184,8 +179,7 @@
       text-align: right;
       letter-spacing: 1px;
     }
-
-    /* SEGUNDA PARTE: MARCO MÁS GRANDE, solo carpetas */
+    /* SEGUNDA PARTE: solo carpetas */
     .file-system {
       width: 100vw;
       max-width: 900px;
@@ -387,7 +381,7 @@
   </div>
   <audio id="accessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
   <script>
-    // Fullscreen y arranque
+    // Fullscreen y arranque: espera antes de permitir clicks del juego
     function startFullscreenAndGame() {
       const body = document.documentElement;
       if (body.requestFullscreen) {
@@ -402,7 +396,9 @@
       generatePassword();
       updateCounter();
       startTimer();
-      startSlot();
+      setTimeout(() => {
+        startSlot();
+      }, 200); // Retardo para evitar que el primer click haga avanzar el juego
     }
 
     let password = [];
