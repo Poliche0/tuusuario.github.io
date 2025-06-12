@@ -224,20 +224,24 @@
         setTimeout(() => box.classList.remove('changing'), 200);
       }, speed);
 
-      window.onclick = () => {
+      function handleClick() {
         if (userInput[currentSlot] === null) {
           userInput[currentSlot] = number;
           clearInterval(interval);
-          window.onclick = null;
+          window.removeEventListener('click', handleClick);
           currentSlot++;
           if (currentSlot < 4) {
             setTimeout(startSlot, 500);
           } else {
-            // Aquí iría la lógica de verificación de contraseña
+            console.log("Input final:", userInput);
           }
         }
       }
+
+      window.addEventListener('click', handleClick);
     }
+
+    window.onload = startSlot;
   </script>
 </body>
 </html>
