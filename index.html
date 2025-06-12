@@ -66,7 +66,6 @@
       font-size: 1.3em; color: #000; background: #0f0; border:none; border-radius:10px;
       padding:18px 48px; font-weight:bold; box-shadow:0 0 14px #0f0; cursor:pointer;
     }
-    /* Caja principal más ancha, sin borde ni sombra */
     #mainGameBox {
       display: flex;
       flex-direction: column;
@@ -179,7 +178,6 @@
       text-align: right;
       letter-spacing: 1px;
     }
-    /* SEGUNDA PARTE: solo carpetas */
     .file-system {
       width: 100vw;
       max-width: 900px;
@@ -280,7 +278,6 @@
       align-items: center;
       animation: flash 0.8s ease-in-out 2;
     }
-    /* HACKEO FALLIDO (TIEMPO AGOTADO) */
     #failedOverlay {
       position: fixed;
       top: 0; left: 0;
@@ -360,7 +357,7 @@
     </div>
   </div>
   <div id="fileSystem" class="file-system">
-    <h2>📁 ARCHIVOS DEL SISTEMA (PARTE 2)</h2>
+    <h2>📁 ARCHIVOS DEL SISTEMA</h2>
     <div class="files">
       <div class="file" onclick="openFile('topsecret')">📁 TOP SECRET</div>
       <div class="file" onclick="openFile('doc1')">📁 Proyecto FASE-17</div>
@@ -381,7 +378,6 @@
   </div>
   <audio id="accessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
   <script>
-    // Fullscreen y arranque: espera antes de permitir clicks del juego
     function startFullscreenAndGame() {
       const body = document.documentElement;
       if (body.requestFullscreen) {
@@ -398,7 +394,7 @@
       startTimer();
       setTimeout(() => {
         startSlot();
-      }, 200); // Retardo para evitar que el primer click haga avanzar el juego
+      }, 200);
     }
 
     let password = [];
@@ -561,7 +557,7 @@
       modal.classList.add('visible');
       setTimeout(() => {
         if (id === 'bomb') {
-          modal.innerHTML = '<h2 style="color:red;font-size:1.15em;">¿Qué cable cortar para desactivar la bomba?</h2><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
+          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivación Bombas</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">El cable de desactivación de bombas generalizado es el <b style="color:red;">rojo</b></div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
         } else if (id === 'topsecret') {
           modal.innerHTML = '<div style="font-size: 1.1em; margin-bottom: 12px; text-align:center">Introduce la contraseña para acceder a<br><strong>TOP SECRET</strong>:</div><input type="password" /><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Cerrar</div>';
         } else if (id === 'doc1') {
@@ -576,7 +572,6 @@
     function hideModal(id) {
       document.getElementById(id).classList.remove('visible');
     }
-    // El juego solo inicia tras pulsar el botón de pantalla completa
   </script>
 </body>
 </html>
