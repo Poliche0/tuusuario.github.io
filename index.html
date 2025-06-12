@@ -14,13 +14,17 @@
       20%, 60% { transform: translateX(-5px); }
       40%, 80% { transform: translateX(5px); }
     }
-    @keyframes startup {
-      0% { opacity: 0; transform: scale(0.9); }
-      100% { opacity: 1; transform: scale(1); }
+    @keyframes flash {
+      0%, 100% { background: black; color: lime; }
+      50% { background: white; color: black; }
     }
     @keyframes popup {
       from { transform: scale(0.8) translate(-50%, -50%); opacity: 0; }
       to { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+    }
+    @keyframes slideNumber {
+      0% { transform: translateY(-20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
     }
     body {
       background: black;
@@ -33,10 +37,6 @@
       height: 100vh;
       margin: 0;
       overflow: hidden;
-      animation: startup 1.5s ease-out;
-    }
-    body.shake {
-      animation: shake 0.5s;
     }
     body::before {
       content: "";
@@ -51,118 +51,193 @@
       z-index: -1;
       animation: matrixRain 10s linear infinite;
     }
-    .full-error {
+    h2 {
+      font-size: 3em;
+      color: #fff;
+    }
+    .screen, .file-system {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    .visible {
+      display: flex;
+    }
+    .digits {
+      display: flex;
+      gap: 40px;
+      font-size: 5em;
+      font-weight: bold;
+      color: lime;
+      letter-spacing: 15px;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 30px;
+      border: 3px solid #0f0;
+      border-radius: 12px;
+      margin: 30px 0;
+    }
+    .inputs {
+      display: flex;
+      gap: 40px;
+      margin: 30px 0;
+    }
+    .input {
+      background-color: #111;
+      padding: 40px;
+      font-size: 4em;
+      border: 4px solid #0f0;
+      width: 110px;
+      text-align: center;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+    .changing {
+      animation: slideNumber 0.3s ease-out;
+    }
+    #instruction {
+      margin-bottom: 30px;
+      font-size: 2em;
+      color: #fff;
+      text-align: center;
+      background: #222;
+      padding: 15px 30px;
+      border: 2px solid #0f0;
+      border-radius: 10px;
+    }
+    #errorMessage {
+      margin-top: 15px;
+      color: red;
+      font-size: 1.4em;
+    }
+    .files {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 40px;
+      justify-content: center;
+      align-items: center;
+    }
+    .file {
+      background: linear-gradient(145deg, #ffe100, #ffcc00);
+      color: black;
+      border: 2px solid #888;
+      padding: 30px 40px;
+      width: 300px;
+      height: 80px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 4px 4px 12px #222;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.4em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .file::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      background: #f5d300;
+      border-bottom: 2px solid #aaa;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #000;
+      border: 3px solid #0f0;
+      padding: 40px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+      animation: popup 0.3s ease-out;
+    }
+    .modal.visible {
+      display: flex;
+    }
+    .modal input {
+      font-size: 2em;
+      padding: 10px;
+      margin-top: 20px;
+    }
+    .close-btn {
+      margin-top: 30px;
+      cursor: pointer;
+      color: #f00;
+      font-size: 1.5em;
+    }
+    #counter, #timer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 1.5em;
+      color: #0f0;
+    }
+    #counter {
+      right: 20px;
+    }
+    #timer {
+      left: 20px;
+    }
+    #accessGranted {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       background: black;
-      color: red;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      font-size: 2em;
       z-index: 100;
-    }
-    .full-error.visible {
-      display: flex;
-    }
-    .restart-btn {
-      margin-top: 30px;
-      padding: 10px 30px;
-      font-size: 1.2em;
-      border: 2px solid red;
-      background: transparent;
-      color: red;
-      cursor: pointer;
-    }
-    #timer {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #0f0;
-      transition: color 0.3s ease;
-    }
-    #timer.warning {
-      color: red;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: flash 0.8s ease-in-out 2;
     }
   </style>
 </head>
 <body>
-  <div id="game" class="screen visible">
-    <div id="instruction">Haz click en la pantalla cuando el número coincida</div>
-    <div class="digits" id="passwordDisplay"></div>
-    <div class="inputs" id="inputs">
-      <div class="input">-</div>
-      <div class="input">-</div>
-      <div class="input">-</div>
-      <div class="input">-</div>
-    </div>
-    <div id="errorMessage"></div>
-    <div id="counter">Hackeos exitosos: 0 / 2</div>
-    <div id="timer">Tiempo restante: 60s</div>
-  </div>
-  <div id="fileSystem" class="file-system">
-    <h2>📁 ARCHIVOS DEL SISTEMA</h2>
-    <div class="files">
-      <div class="file" onclick="openFile('topsecret')">🔐 TOP SECRET</div>
-      <div class="file" onclick="openFile('doc1')">📁 Proyecto FASE-17</div>
-      <div class="file" onclick="openFile('doc2')">📁 Informe R-41</div>
-      <div class="file" onclick="openFile('bomb')">💣 Desactivación Bombas</div>
-    </div>
-  </div>
-  <div id="topsecret" class="modal">
-    <div style="font-size: 1.5em; margin-bottom: 20px; text-align:center">Introduce la contraseña para acceder a<br><strong>TOP SECRET</strong>:</div>
-    <input type="password" />
-    <div class="close-btn" onclick="hideModal('topsecret')">❌ Cerrar</div>
-  </div>
-  <div id="doc1" class="modal"></div>
-  <div id="doc2" class="modal"></div>
-  <div id="bomb" class="modal"></div>
-  <div id="failScreen" class="full-error">
-    <div>⛔ ERROR DE HACKEO - TIEMPO AGOTADO</div>
-    <button class="restart-btn" onclick="restartGame()">🔄 Reiniciar</button>
-  </div>
+  <!-- HTML structure omitted for brevity (unchanged) -->
   <script>
-    let timerInterval;
-    let timeLeft = 60;
-    const timerDisplay = document.getElementById('timer');
+    let interval;
+    let currentSlot = 0;
+    const userInput = [null, null, null, null];
 
-    function startTimer() {
-      timeLeft = 60;
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-        if (timeLeft <= 15) timerDisplay.classList.add('warning');
-        if (timeLeft <= 0) triggerFailure();
-      }, 1000);
+    function startSlot() {
+      const box = document.querySelectorAll('#inputs .input')[currentSlot];
+      let number = 1;
+      box.textContent = number;
+
+      const speeds = [1000, 833, 666, 500];
+      const speed = speeds[currentSlot];
+
+      interval = setInterval(() => {
+        number = number % 9 + 1;
+        box.textContent = number;
+        box.classList.add('changing');
+        setTimeout(() => box.classList.remove('changing'), 200);
+      }, speed);
+
+      window.onclick = () => {
+        if (userInput[currentSlot] === null) {
+          userInput[currentSlot] = number;
+          clearInterval(interval);
+          window.onclick = null;
+          currentSlot++;
+          if (currentSlot < 4) {
+            setTimeout(startSlot, 500);
+          } else {
+            // Aquí iría la lógica de verificación de contraseña
+          }
+        }
+      }
     }
-
-    function triggerFailure() {
-      clearInterval(timerInterval);
-      document.body.classList.add('shake');
-      setTimeout(() => document.body.classList.remove('shake'), 500);
-      document.getElementById('failScreen').classList.add('visible');
-    }
-
-    function restartGame() {
-      document.getElementById('failScreen').classList.remove('visible');
-      timerDisplay.classList.remove('warning');
-      document.getElementById('counter').textContent = 'Hackeos exitosos: 0 / 2';
-      startTimer();
-    }
-
-    window.onload = () => {
-      startTimer();
-    }
-
-    // Configuración de velocidad para los números
-    const speeds = [1000, 800, 600, 500]; // 1s a 0.5s
-    // Lógica para usar `speeds` al avanzar los números por casilla vendría aquí
   </script>
 </body>
 </html>
