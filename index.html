@@ -5,41 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interfaz de Seguridad Nacional</title>
   <style>
-    @keyframes matrixRain {
-      0% { background-position: 0 0; }
-      100% { background-position: 0 1000px; }
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-5px); }
-      40%, 80% { transform: translateX(5px); }
-    }
-    @keyframes flash {
-      0%, 100% { background: black; color: lime; }
-      50% { background: white; color: black; }
-    }
-    @keyframes popup {
-      from { transform: scale(0.8) translate(-50%, -50%); opacity: 0; }
-      to { transform: scale(1) translate(-50%, -50%); opacity: 1; }
-    }
-    @keyframes slideNumber {
-      0% { transform: translateY(-20px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
       background: black;
-    }
-    body {
       color: #0f0;
       font-family: 'Courier New', Courier, monospace;
-      width: 100vw;
-      height: 100vh;
-      min-height: 100vh;
-      margin: 0;
       overflow: hidden;
+    }
+    body {
+      width: 100vw;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -54,104 +31,81 @@
       height: 100vh;
       background: url('https://media.giphy.com/media/l0HlQ7LRal7hZ4tGo/giphy.gif') repeat;
       background-size: cover;
-      opacity: 0.1;
+      opacity: 0.09;
       z-index: -1;
       animation: matrixRain 10s linear infinite;
       pointer-events: none;
     }
-    /* PRIMERA PARTE SIN MARCO */
+    @keyframes matrixRain {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 1000px; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0);}
+      20%, 60% { transform: translateX(-12px);}
+      40%, 80% { transform: translateX(12px);}
+    }
+    @keyframes flash {
+      0%, 100% { background: black; color: lime;}
+      50% { background: white; color: black;}
+    }
+    @keyframes popup {
+      from { transform: scale(0.8) translate(-50%, -50%); opacity: 0;}
+      to { transform: scale(1) translate(-50%, -50%); opacity: 1;}
+    }
+    @keyframes slideNumber {
+      0% { transform: translateY(-28px); opacity: 0;}
+      100% { transform: translateY(0); opacity: 1;}
+    }
+
+    /* CONTENEDOR JUEGO */
+    #mainGameBox {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.89);
+      border: 2.7px solid #0f0;
+      border-radius: 22px;
+      box-shadow: 0 0 40px #000, 0 0 12px #0f0;
+      padding: 38px 36px 30px 36px;
+      min-width: 340px;
+      max-width: 98vw;
+      min-height: 410px;
+      max-height: 90vh;
+      margin: 0 auto;
+    }
     #game {
-      width: 100vw;
-      max-width: none;
-      margin: 0;
-      background: none;
-      border: none;
-      box-shadow: none;
-      border-radius: 0;
-      padding: 0;
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 400px;
-      gap: 0.5em;
-    }
-    h2 {
-      font-size: 2.1em;
-      color: #fff;
-      margin: 0 0 20px 0;
-    }
-    .screen, .file-system {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-    .visible {
-      display: flex;
-    }
-    .digits {
-      display: flex;
-      gap: 18px;
-      font-size: 2.4em;
-      font-weight: bold;
-      color: lime;
-      letter-spacing: 7px;
-      background-color: rgba(0, 0, 0, 0.8);
-      padding: 15px;
-      border: 2px solid #0f0;
-      border-radius: 10px;
-      margin: 20px 0;
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-    .inputs {
-      display: flex;
-      gap: 14px;
-      margin: 18px 0;
-      width: 100%;
-      justify-content: center;
-    }
-    .input {
-      background-color: #111;
-      padding: 24px 0;
-      font-size: 2em;
-      border: 3px solid #0f0;
-      width: 52px;
-      text-align: center;
-      border-radius: 8px;
-      transition: all 0.2s;
-      box-sizing: border-box;
-    }
-    .changing {
-      animation: slideNumber 0.3s ease-out;
+      gap: 0.7em;
     }
     #instruction {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       font-size: 1.23em;
       color: #fff;
       text-align: center;
       background: #222;
-      padding: 12px 10px 10px 10px;
+      padding: 13px 7px 11px 7px;
       border: 2px solid #0f0;
-      border-radius: 8px;
+      border-radius: 10px;
       width: 100%;
       box-sizing: border-box;
     }
     #timer {
-      position: static;
-      margin: 0 0 14px 0;
-      font-size: 2em;
+      margin: 0 0 18px 0;
+      font-size: 2.2em;
       font-family: 'Courier New', Courier, monospace;
       font-weight: bold;
       background: rgba(0,0,0,0.85);
       border: 3px solid #0f0;
-      border-radius: 15px;
-      padding: 11px 0;
+      border-radius: 13px;
+      padding: 13px 0;
       color: #0f0;
-      box-shadow: 0 0 18px #000, 0 0 5px #0f0;
-      transition: border-color 0.2s, color 0.2s;
+      box-shadow: 0 0 20px #000, 0 0 6px #0f0;
       text-align: center;
       letter-spacing: 2px;
       user-select: none;
@@ -161,45 +115,88 @@
       z-index: 1;
       display: block;
     }
+    .digits {
+      display: flex;
+      gap: 30px;
+      font-size: 3.2em;
+      font-weight: bold;
+      color: lime;
+      letter-spacing: 14px;
+      background-color: rgba(0, 0, 0, 0.89);
+      padding: 18px 0;
+      border: 2.5px solid #0f0;
+      border-radius: 12px;
+      margin: 18px 0;
+      width: 88%;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    .inputs {
+      display: flex;
+      gap: 32px;
+      margin: 18px 0 12px 0;
+      width: 100%;
+      justify-content: center;
+    }
+    .input {
+      background-color: #111;
+      padding: 48px 0;
+      font-size: 3em;
+      border: 4px solid #0f0;
+      width: 78px;
+      text-align: center;
+      border-radius: 14px;
+      transition: all 0.18s;
+      box-sizing: border-box;
+      box-shadow: 0 0 12px #0f04;
+    }
+    .changing {
+      animation: slideNumber 0.3s ease-out;
+    }
     #errorMessage {
-      margin-top: 10px;
+      margin-top: 14px;
       color: red;
-      font-size: 1em;
-      min-height: 26px;
-      height: 26px;
+      font-size: 1.4em;
+      min-height: 28px;
+      height: 28px;
       text-align: center;
       font-weight: bold;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       opacity: 1;
       transition: opacity 0.2s;
     }
     #counter {
-      font-size: 1.08em;
+      font-size: 1.23em;
       color: #0f0;
       margin-top: 10px;
       width: 100%;
       text-align: right;
+      letter-spacing: 1px;
     }
+
     /* SEGUNDA PARTE: MARCO MÁS GRANDE */
     .file-system {
-      width: 100%;
-      max-width: 700px;
+      width: 100vw;
+      max-width: 860px;
       margin: 0 auto;
       align-items: center;
       justify-content: flex-start;
       gap: 0.5em;
-      background: rgba(0,0,0,0.86);
-      border-radius: 20px;
-      box-shadow: 0 0 30px #000, 0 0 8px #0f0;
-      border: 2.5px solid #0f0;
-      padding: 32px 24px 28px 24px;
-      min-height: 450px;
+      background: rgba(0,0,0,0.93);
+      border-radius: 28px;
+      box-shadow: 0 0 60px #000, 0 0 15px #0f0;
+      border: 3.3px solid #0f0;
+      padding: 42px 24px 34px 24px;
+      min-height: 480px;
+      display: none;
+      flex-direction: column;
     }
+    .file-system.visible { display: flex; }
     .files {
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      margin-top: 18px;
+      gap: 28px;
+      margin-top: 24px;
       width: 100%;
       justify-content: center;
       align-items: center;
@@ -207,17 +204,17 @@
     .file {
       background: linear-gradient(145deg, #ffe100, #ffcc00);
       color: black;
-      border: 2px solid #888;
+      border: 2.5px solid #888;
       padding: 18px 0;
-      width: 95%;
-      max-width: 480px;
-      height: 58px;
+      width: 97%;
+      max-width: 560px;
+      height: 64px;
       text-align: center;
       cursor: pointer;
-      box-shadow: 2px 2px 7px #222;
-      border-radius: 10px;
+      box-shadow: 2px 2px 11px #222;
+      border-radius: 12px;
       font-weight: bold;
-      font-size: 1.2em;
+      font-size: 1.3em;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -230,11 +227,11 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 14px;
+      height: 16px;
       background: #f5d300;
       border-bottom: 2px solid #aaa;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
     }
     .modal {
       position: fixed;
@@ -250,12 +247,10 @@
       z-index: 10;
       animation: popup 0.3s ease-out;
       max-width: 94vw;
-      border-radius: 14px;
+      border-radius: 18px;
       box-sizing: border-box;
     }
-    .modal.visible {
-      display: flex;
-    }
+    .modal.visible {display: flex;}
     .modal input {
       font-size: 1.14em;
       padding: 10px;
@@ -285,18 +280,18 @@
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.96);
+      background: rgba(0,0,0,0.98);
       z-index: 200;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 30px;
+      gap: 42px;
       transition: opacity 0.6s;
       opacity: 1;
     }
     #failedOverlay h1 {
-      font-size: 3em;
+      font-size: 3.2em;
       color: #f00;
       margin: 0 0 18px 0;
       text-align: center;
@@ -306,12 +301,12 @@
       text-shadow: 0 0 16px #900, 0 0 6px #fff;
     }
     #failedOverlay button {
-      font-size: 1.35em;
+      font-size: 1.45em;
       color: #fff;
       background: #0f0;
       border: none;
-      border-radius: 9px;
-      padding: 18px 46px;
+      border-radius: 12px;
+      padding: 22px 54px;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 0 18px #0f0;
@@ -321,33 +316,37 @@
       background: #fff;
       color: #0f0;
     }
-    @media (max-width: 700px) {
-      .file-system { max-width: 98vw; }
-      .file { font-size: 1em; max-width: 98vw; }
+    @media (max-width: 900px) {
+      .file-system { max-width: 99vw; }
+      .file { font-size: 1.11em; max-width: 99vw; }
+      #mainGameBox {min-width: 96vw; padding: 8vw 0; }
     }
     @media (max-width: 600px) {
-      .digits { font-size: 1.32em; gap: 7px; }
-      .inputs .input { font-size: 1.3em; padding: 12px 0; width: 34px;}
-      #timer { font-size: 1.2em; padding: 7px 0;}
+      #mainGameBox {min-width: 99vw; padding: 4vw 0;}
+      .digits { font-size: 1.7em; gap: 9px;}
+      .inputs .input { font-size: 1.7em; padding: 17px 0; width: 45px;}
+      #timer { font-size: 1.19em; padding: 7px 0;}
       #instruction { font-size: 1em; padding: 7px 4px;}
-      .file { font-size: 0.99em; height: 38px; }
-      h2 { font-size: 1.2em; }
+      .file { font-size: 0.99em; height: 38px;}
+      h2 { font-size: 1.2em;}
     }
   </style>
 </head>
 <body>
-  <div id="game" class="screen visible">
-    <div id="instruction">Haz click en la pantalla cuando el número coincida</div>
-    <div id="timer"></div>
-    <div class="digits" id="passwordDisplay"></div>
-    <div class="inputs" id="inputs">
-      <div class="input">-</div>
-      <div class="input">-</div>
-      <div class="input">-</div>
-      <div class="input">-</div>
+  <div id="mainGameBox">
+    <div id="game" class="screen visible">
+      <div id="instruction">Haz click en la pantalla cuando el número coincida</div>
+      <div id="timer"></div>
+      <div class="digits" id="passwordDisplay"></div>
+      <div class="inputs" id="inputs">
+        <div class="input">-</div>
+        <div class="input">-</div>
+        <div class="input">-</div>
+        <div class="input">-</div>
+      </div>
+      <div id="errorMessage"></div>
+      <div id="counter">Firewalls atravesados: 0 / 2</div>
     </div>
-    <div id="errorMessage"></div>
-    <div id="counter">Firewalls atravesados: 0 / 2</div>
   </div>
   <div id="fileSystem" class="file-system">
     <h2>📁 ARCHIVOS DEL SISTEMA</h2>
@@ -371,14 +370,12 @@
   </div>
   <audio id="accessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
   <script>
-    // --- CONTRASEÑA Y JUEGO ---
     let password = [];
     let userInput = [null, null, null, null];
     let currentSlot = 0;
     let interval;
     let successCount = 0;
 
-    // --- NUEVO TIMER ---
     let timeLeft = 60.00;
     let timer;
     let timerActive = true;
@@ -389,7 +386,6 @@
     function formatTime(t) {
       return (t > 0 ? t : 0).toFixed(2).replace('.', ',') + 's';
     }
-
     function animateTimerColor() {
       clearInterval(timerColorInterval);
       timerColorInterval = setInterval(() => {
@@ -398,15 +394,14 @@
         if (timerColorState) {
           timerDiv.style.color = '#0f0';
           timerDiv.style.borderColor = '#0f0';
-          timerDiv.style.boxShadow = '0 0 18px #000, 0 0 5px #0f0';
+          timerDiv.style.boxShadow = '0 0 20px #000, 0 0 6px #0f0';
         } else {
           timerDiv.style.color = '#f00';
           timerDiv.style.borderColor = '#f00';
-          timerDiv.style.boxShadow = '0 0 18px #000, 0 0 5px #f00';
+          timerDiv.style.boxShadow = '0 0 20px #000, 0 0 6px #f00';
         }
       }, colorChangeRate);
     }
-
     function updateTimer() {
       const timerDiv = document.getElementById('timer');
       timerDiv.textContent = `⏳ ${formatTime(timeLeft)}`;
@@ -414,20 +409,17 @@
         timerActive = false;
         clearInterval(timer);
         clearInterval(timerColorInterval);
-        // Overlay de hackeo fallido y botón
         mostrarHackeoFallido();
       }
     }
-
     function mostrarHackeoFallido() {
       document.getElementById('failedOverlay').style.display = "flex";
-      document.getElementById('game').classList.remove('visible');
+      document.getElementById('mainGameBox').style.display = "none";
     }
     function reiniciarTodo() {
       document.getElementById('failedOverlay').style.display = "none";
       location.reload();
     }
-
     function startTimer() {
       timerActive = true;
       timeLeft = 60.00;
@@ -450,24 +442,19 @@
         }
       }, 20);
     }
-
     function stopTimer() {
       timerActive = false;
       clearInterval(timer);
       clearInterval(timerColorInterval);
       document.getElementById('timer').style.display = "none";
     }
-
-    // --- LÓGICA DEL JUEGO ---
     function generatePassword() {
       password = Array.from({ length: 4 }, () => Math.floor(Math.random() * 9) + 1);
       document.getElementById('passwordDisplay').innerHTML = password.join(' ');
     }
-
     function updateCounter() {
       document.getElementById('counter').textContent = `Firewalls atravesados: ${successCount} / 2`;
     }
-
     function resetGame(error = false) {
       userInput = [null, null, null, null];
       currentSlot = 0;
@@ -489,7 +476,6 @@
       generatePassword();
       setTimeout(startSlot, 900);
     }
-
     function startSlot() {
       const box = document.querySelectorAll('#inputs .input')[currentSlot];
       let number = 1;
@@ -502,7 +488,6 @@
         box.classList.add('changing');
         setTimeout(() => box.classList.remove('changing'), 180);
       }, speed);
-
       window.onclick = () => {
         if (userInput[currentSlot] === null) {
           userInput[currentSlot] = number;
@@ -518,7 +503,7 @@
                 updateCounter();
                 if (successCount >= 2) {
                   stopTimer();
-                  document.getElementById('game').classList.remove('visible');
+                  document.getElementById('mainGameBox').style.display = "none";
                   const accessScreen = document.getElementById('accessGranted');
                   const fileSystem = document.getElementById('fileSystem');
                   const sound = document.getElementById('accessSound');
@@ -539,7 +524,6 @@
         }
       }
     }
-
     function openFile(id) {
       const modal = document.getElementById(id);
       modal.innerHTML = '<div style="font-size:1.08em; margin-bottom:8px">Cargando...</div>';
@@ -558,11 +542,9 @@
         }
       }, id === 'bomb' ? 500 : 1000);
     }
-
     function hideModal(id) {
       document.getElementById(id).classList.remove('visible');
     }
-
     // --- INICIO ---
     generatePassword();
     updateCounter();
